@@ -20,7 +20,7 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 .content {
-  padding-top: 5.5vh;
+  padding-top: 6vh;
   padding-left: 10%;
 }
 </style>

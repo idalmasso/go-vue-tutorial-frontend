@@ -1,18 +1,24 @@
 <template>
-  <div class="posts">
-    <post-list :posts="posts" title="Posts" />
+  <div class="container">
+    <h1>{{ user.username }}</h1>
+    <p>{{ user.description }}</p>
+
+    <post-list :posts="posts" title="Last Posts"></post-list>
   </div>
 </template>
 
 <script>
 import PostList from "../components/PostList.vue";
+
 export default {
-  name: "Posts",
-  components: {
-    PostList
-  },
+  components: { PostList },
   data() {
     return {
+      user: {
+        username: "idalmasso",
+        description:
+          "This is only a little description of everything you wanted to know..."
+      },
       posts: [
         {
           id: 1,
@@ -34,12 +40,6 @@ export default {
               post: "Please..."
             }
           ]
-        },
-        {
-          id: 2,
-          user: "cshannon",
-          date: "2021-01-19 15:25:20",
-          post: "I think that someone make some really   bad puns..."
         }
       ]
     };

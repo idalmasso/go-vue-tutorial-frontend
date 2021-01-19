@@ -1,7 +1,10 @@
 <template>
-  <div class="post-list">
-    <single-post v-for="post in posts" :key="post.id" :post="post">
-    </single-post>
+  <div>
+    <h1>{{ title }}</h1>
+    <div class="post-list" v-if="showPosts">
+      <single-post v-for="post in posts" :key="post.id" :post="post">
+      </single-post>
+    </div>
   </div>
 </template>
 
@@ -11,7 +14,12 @@ export default {
   components: {
     SinglePost
   },
-  props: ["posts"]
+  props: ["posts", "title"],
+  computed: {
+    showPosts() {
+      return this.posts.length > 0;
+    }
+  }
 };
 </script>
 
