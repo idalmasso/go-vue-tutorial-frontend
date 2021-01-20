@@ -11,12 +11,19 @@
       </router-link>
     </div>
     <div class="right-links ">
-      <a class="app-bar-item" href="#">LOGIN</a>
+      <a class="app-bar-item" href="#" v-if="!loggedIn" @click.prevent="login"
+        >LOGIN</a
+      >
+      <a class="app-bar-item" href="#" v-if="loggedIn" @click.prevent="logout"
+        >LOGOUT</a
+      >
     </div>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
@@ -27,10 +34,37 @@ export default {
         },
         {
           name: "User",
-          to: { name: "User" }
+          to: {
+            name: "User",
+            params: {
+              userid: this.$store.getters["auth/currentUser"].username
+            }
+          }
         }
       ]
     };
+  },
+  methods: {
+    //Not nice, use mapAction!
+    /*
+    login() {
+      this.$store.dispatch("auth/login");
+    },
+    logout() {
+      this.$store.dispatch("auth/logout");
+    }
+    */
+    ...mapActions({
+      login: "auth/login", // map `this.login()` to `this.$store.dispatch('auth/login')`
+      logout: "auth/logout"
+    })
+  },
+  computed: {
+    /*Not nice, I use mapGetters!
+    loggedIn() {
+      return this.$store.getters["auth/isLoggedIn"];
+    }*/
+    ...mapGetters({ loggedIn: "auth/isLoggedIn" })
   }
 };
 </script>

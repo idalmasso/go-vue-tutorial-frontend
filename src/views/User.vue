@@ -12,8 +12,8 @@
 import PostList from "../components/PostList.vue";
 export default {
   components: { PostList },
-  data() {
-    return {};
+  props: {
+    userid: { type: String, default: "" }
   },
   computed: {
     userPosts() {
@@ -21,7 +21,7 @@ export default {
       return this.$store.getters["posts/userPosts"](this.user.username);
     },
     user() {
-      return this.$store.getters["users/currentUser"];
+      return this.$store.getters["users/getUser"](this.userid);
     }
   }
 };
