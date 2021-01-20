@@ -17,7 +17,7 @@ export default {
   props: ["posts", "title"],
   computed: {
     showPosts() {
-      return this.posts.length > 0;
+      return this.posts && this.posts.length > 0;
     }
   }
 };
