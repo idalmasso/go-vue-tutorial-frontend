@@ -1,6 +1,10 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import Posts from "../views/Posts.vue";
+import Login from "../views/Login.vue";
+import User from "../views/User.vue";
+
+import store from "@/store/index.js";
 
 Vue.use(VueRouter);
 
@@ -13,12 +17,28 @@ const routes = [
   {
     path: "/user/:userid",
     name: "User",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/User.vue"),
-    props: true
+    component: User,
+    props: true,
+    beforeEnter: (to, from, next) => {
+      if (!store.getters["auth/isLoggedIn"]) {
+        next({ name: "Login" });
+      } else {
+        next();
+      }
+    }
+  },
+  {
+    path: "/login",
+    name: "Login",
+    component: Login,
+    //This is not needed right by now, because the store is  refreshed on page refresh... Will be needed!
+    beforeEnter: (to, from, next) => {
+      if (store.getters["auth/isLoggedIn"]) {
+        next({ name: "Posts" });
+      } else {
+        next();
+      }
+    }
   }
 ];
 

@@ -2,7 +2,7 @@
   <div class="app-bar">
     <div class="left-links">
       <router-link
-        v-for="link in links"
+        v-for="link in activeLinks"
         :key="link.name"
         :to="link.to"
         class="app-bar-item"
@@ -11,10 +11,19 @@
       </router-link>
     </div>
     <div class="right-links ">
-      <a class="app-bar-item" href="#" v-if="!loggedIn" @click.prevent="login"
-        >LOGIN</a
+      <router-link
+        class="app-bar-item"
+        href="#"
+        v-if="!loggedIn"
+        @click.prevent
+        :to="{ name: 'Login' }"
+        >LOGIN</router-link
       >
-      <a class="app-bar-item" href="#" v-if="loggedIn" @click.prevent="logout"
+      <a
+        class="app-bar-item"
+        href="#"
+        v-if="loggedIn"
+        @click.prevent="logoutButtonClicked"
         >LOGOUT</a
       >
     </div>
@@ -22,17 +31,19 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
+
 export default {
   data() {
     return {
       links: [
         {
+          visibleIfLoggedOut: true,
           name: "Posts",
           to: { name: "Posts" }
         },
         {
+          visibleIfLoggedOut: false,
           name: "User",
           to: {
             name: "User",
@@ -45,26 +56,23 @@ export default {
     };
   },
   methods: {
-    //Not nice, use mapAction!
-    /*
-    login() {
-      this.$store.dispatch("auth/login");
-    },
-    logout() {
-      this.$store.dispatch("auth/logout");
-    }
-    */
     ...mapActions({
       login: "auth/login", // map `this.login()` to `this.$store.dispatch('auth/login')`
       logout: "auth/logout"
-    })
+    }),
+    logoutButtonClicked() {
+      this.logout().then(() => {
+        this.$router.push({ name: "Login" });
+      });
+    }
   },
   computed: {
-    /*Not nice, I use mapGetters!
-    loggedIn() {
-      return this.$store.getters["auth/isLoggedIn"];
-    }*/
-    ...mapGetters({ loggedIn: "auth/isLoggedIn" })
+    ...mapGetters({ loggedIn: "auth/isLoggedIn" }),
+    activeLinks() {
+      return this.links.filter(
+        link => link.visibleIfLoggedOut || this.loggedIn
+      );
+    }
   }
 };
 </script>
