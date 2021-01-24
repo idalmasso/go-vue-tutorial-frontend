@@ -41,7 +41,10 @@ export default {
     async addPost(context, post) {
       fetch("http://localhost:3000/api/posts", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: context.rootGetters["auth/getTokenHeader"]
+        },
         body: JSON.stringify(post)
       })
         .then(response => {
@@ -59,11 +62,13 @@ export default {
     },
     async deletePost(context, { post }) {
       fetch("http://localhost:3000/api/posts/" + post.id, {
-        method: "DELETE"
+        method: "DELETE",
+        headers: {
+          Authorization: context.rootGetters["auth/getTokenHeader"]
+        }
       })
         .then(response => {
           if (response.ok) {
-            console.log(response);
             context.commit("DELETE_POST", post.id);
             return;
           }
@@ -77,7 +82,8 @@ export default {
       fetch("http://localhost:3000/api/posts/" + postId + "/comments", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: context.rootGetters["auth/getTokenHeader"]
         },
         body: JSON.stringify(comment)
       })
@@ -103,7 +109,6 @@ export default {
           }
         })
         .then(data => {
-          console.log(data);
           context.commit("SET_ALL_POSTS", data);
         })
         .catch(error => {
@@ -116,7 +121,7 @@ export default {
       return state.posts;
     },
     userPosts: state => user => {
-      return state.posts.filter(post => post.user === user);
+      return state.posts.filter(post => post.username === user);
     }
   }
 };

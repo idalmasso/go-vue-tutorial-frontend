@@ -1,15 +1,7 @@
 export default {
   namespaced: true,
   state: {
-    loadedUsers: [
-      {
-        id: 1,
-        username: "idalmasso",
-        description: "Here is the description",
-        //here there will be the logic for auth and so on...
-        loggedIn: false
-      }
-    ]
+    loadedUsers: []
   },
   mutations: {
     ADD_USER(state, user) {
@@ -22,7 +14,26 @@ export default {
       state.loadedUsers.push(user);
     }
   },
-  actions: {},
+  actions: {
+    async addUser(context, { username }) {
+      return fetch("http://localhost:3000/api/users/" + username, {
+        headers: {
+          Authorization: context.rootGetters["auth/getTokenHeader"]
+        }
+      })
+        .then(response => {
+          if (!response.ok) throw new Error("Cannot get user");
+          return response.json();
+        })
+        .then(data => {
+          context.commit("ADD_USER", data);
+        })
+        .catch(error => {
+          console.log(error);
+          throw error;
+        });
+    }
+  },
   getters: {
     getUser: state => userid => {
       if (state.loadedUsers.some(user => user.username == userid)) {

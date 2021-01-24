@@ -34,27 +34,6 @@
 import { mapActions, mapGetters } from "vuex";
 
 export default {
-  data() {
-    return {
-      links: [
-        {
-          visibleIfLoggedOut: true,
-          name: "Posts",
-          to: { name: "Posts" }
-        },
-        {
-          visibleIfLoggedOut: false,
-          name: "User",
-          to: {
-            name: "User",
-            params: {
-              userid: this.$store.getters["auth/currentUser"].username
-            }
-          }
-        }
-      ]
-    };
-  },
   methods: {
     ...mapActions({
       login: "auth/login", // map `this.login()` to `this.$store.dispatch('auth/login')`
@@ -67,7 +46,35 @@ export default {
     }
   },
   computed: {
-    ...mapGetters({ loggedIn: "auth/isLoggedIn" }),
+    ...mapGetters({
+      loggedIn: "auth/isLoggedIn"
+    }),
+    links() {
+      return [
+        {
+          visibleIfLoggedOut: true,
+          name: "Posts",
+          to: { name: "Posts" }
+        },
+        {
+          visibleIfLoggedOut: false,
+          name: "User",
+          to: {
+            name: "User",
+            params: {
+              userid: this.currentUser
+            }
+          }
+        }
+      ];
+    },
+    currentUser() {
+      const user = this.$store.getters["auth/currentUser"];
+      if (user) {
+        return user.username;
+      }
+      return "";
+    },
     activeLinks() {
       return this.links.filter(
         link => link.visibleIfLoggedOut || this.loggedIn

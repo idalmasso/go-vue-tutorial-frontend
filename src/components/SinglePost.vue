@@ -6,7 +6,11 @@
           postTitle(post)
         }}</router-link>
       </h3>
-      <button class="delete-button" @click.prevent="deletePost">
+      <button
+        v-if="loggedIn && currentUser.username === post.username"
+        class="delete-button"
+        @click.prevent="deletePost"
+      >
         Delete
       </button></template
     >

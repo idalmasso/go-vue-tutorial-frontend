@@ -6,10 +6,11 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "deploy": "push-dir --dir=dist --branch=production --cleanup" 
+    "deploy": "push-dir --dir=dist --branch=production --cleanup"
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "jwt-decode": "^3.1.2",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0",

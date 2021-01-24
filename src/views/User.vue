@@ -17,12 +17,14 @@ export default {
   },
   computed: {
     userPosts() {
-      console.log(this.user);
-      return this.$store.getters["posts/userPosts"](this.user.username);
+      return this.$store.getters["posts/userPosts"](this.userid);
     },
     user() {
       return this.$store.getters["users/getUser"](this.userid);
     }
+  },
+  mounted() {
+    this.$store.dispatch("users/addUser", { username: this.userid });
   }
 };
 </script>
