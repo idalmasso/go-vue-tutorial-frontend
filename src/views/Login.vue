@@ -88,8 +88,13 @@ label {
   text-align: center;
 }
 input {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
+  box-sizing: border-box;
+  border-radius: 8px;
+  width: 100%;
+  padding: 8px 20px;
+}
+input:focus {
+  outline: 0;
+  background-color: wheat;
 }
 </style>
