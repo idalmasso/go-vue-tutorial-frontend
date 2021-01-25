@@ -1,4 +1,5 @@
 import jwt_decode from "jwt-decode";
+import dbUtils from "../indexedDButils.js";
 export default {
   namespaced: true,
   state: {
@@ -33,14 +34,17 @@ export default {
           return response.json();
         })
         .then(data => {
+          dbUtils.addUser({ username: username, token: data.token });
           context.commit("LOGIN", { username: username, token: data.token });
         })
         .catch(error => {
+          dbUtils.removeUser({ username: username });
           context.commit("LOGOUT");
           throw error;
         });
     },
     async logout(context) {
+      dbUtils.removeUser({ username: context.getters.currentUser.username });
       context.commit("LOGOUT");
     },
     async signup(context, { username, password }) {
@@ -55,14 +59,22 @@ export default {
           return response.json();
         })
         .then(data => {
+          dbUtils.addUser({ username: username, token: data.token });
           context.commit("LOGIN", { username: username, token: data.token });
         })
         .catch(error => {
-          context.commit("LOGOUT");
-          error.read().then((data, done) => {
-            throw Error(data);
+          dbUtils.removeUser({
+            username: context.getters.currentUser.username
           });
+          context.commit("LOGOUT");
+          throw error;
         });
+    },
+    async loadUser(context) {
+      dbUtils.getUser().then(user => {
+        console.log(user);
+        if (user && user != {}) context.commit("LOGIN", user);
+      });
     }
   },
   getters: {

@@ -10,6 +10,9 @@ import TheApplicationBar from "./components/UI/TheApplicationBar.vue";
 export default {
   components: {
     TheApplicationBar
+  },
+  mounted() {
+    this.$store.dispatch("auth/loadUser");
   }
 };
 </script>
