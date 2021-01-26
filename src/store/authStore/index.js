@@ -24,7 +24,7 @@ export default {
   },
   actions: {
     async login(context, { username, password }) {
-      return fetch("http://localhost:3000/api/auth/login", {
+      return fetch(process.env.VUE_APP_SERVER_ADDRESS + "/api/auth/login", {
         method: "POST",
         body: JSON.stringify({ username: username, password: password })
       })
@@ -50,10 +50,13 @@ export default {
       router.push({ name: "Login" });
     },
     async signup(context, { username, password }) {
-      return fetch("http://localhost:3000/api/auth/create-user", {
-        method: "POST",
-        body: JSON.stringify({ username: username, password: password })
-      })
+      return fetch(
+        process.env.VUE_APP_SERVER_ADDRESS + "/api/auth/create-user",
+        {
+          method: "POST",
+          body: JSON.stringify({ username: username, password: password })
+        }
+      )
         .then(response => {
           if (!response.ok) {
             throw new Error("Cannot signup!");

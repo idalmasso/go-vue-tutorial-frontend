@@ -16,11 +16,14 @@ export default {
   },
   actions: {
     async addUser(context, { username }) {
-      return fetch("http://localhost:3000/api/users/" + username, {
-        headers: {
-          Authorization: context.rootGetters["auth/getTokenHeader"]
+      return fetch(
+        process.env.VUE_APP_SERVER_ADDRESS + "/api/users/" + username,
+        {
+          headers: {
+            Authorization: context.rootGetters["auth/getTokenHeader"]
+          }
         }
-      })
+      )
         .then(response => {
           if (!response.ok) {
             if (response.status == 401) {
@@ -37,8 +40,38 @@ export default {
           console.log(error);
           throw error;
         });
+    },
+    async updateDescription(context, { username, description }) {
+      return fetch(
+        process.env.VUE_APP_SERVER_ADDRESS + "/api/users/" + username,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: context.rootGetters["auth/getTokenHeader"],
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ username: username, description: description })
+        }
+      )
+        .then(response => {
+          if (!response.ok) {
+            if (response.status == 401) {
+              context.dispatch("auth/logout", {}, { root: true });
+            }
+            throw new Error("Cannot update");
+          }
+          return response.json();
+        })
+        .then(data => {
+          context.commit("ADD_USER", data);
+        })
+        .catch(error => {
+          console.log(error);
+          throw error;
+        });
     }
   },
+
   getters: {
     getUser: state => userid => {
       if (state.loadedUsers.some(user => user.username == userid)) {

@@ -61,7 +61,7 @@ export default {
         });
     },
     async deletePost(context, { post }) {
-      fetch("http://localhost:3000/api/posts/" + post.id, {
+      fetch(process.env.VUE_APP_SERVER_ADDRESS + "/api/posts/" + post.id, {
         method: "DELETE",
         headers: {
           Authorization: context.rootGetters["auth/getTokenHeader"]
@@ -79,14 +79,20 @@ export default {
         });
     },
     async addComment(context, { postId, comment }) {
-      fetch("http://localhost:3000/api/posts/" + postId + "/comments", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: context.rootGetters["auth/getTokenHeader"]
-        },
-        body: JSON.stringify(comment)
-      })
+      fetch(
+        process.env.VUE_APP_SERVER_ADDRESS +
+          "/api/posts/" +
+          postId +
+          "/comments",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: context.rootGetters["auth/getTokenHeader"]
+          },
+          body: JSON.stringify(comment)
+        }
+      )
         .then(response => {
           if (response.ok) {
             return response.json();
@@ -100,7 +106,7 @@ export default {
         });
     },
     async getAllPosts(context) {
-      fetch("http://localhost:3000/api/posts")
+      fetch(process.env.VUE_APP_SERVER_ADDRESS + "/api/posts")
         .then(response => {
           if (response.ok) {
             return response.json();
