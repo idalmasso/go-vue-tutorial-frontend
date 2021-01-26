@@ -1,5 +1,5 @@
 <template>
-  <form>
+  <form @submit.prevent="submitted">
     <label v-if="showLabel" :for="'text' + this._uid">{{ textRequest }}</label>
     <input
       :id="'text' + this._uid"
@@ -7,7 +7,7 @@
       :placeholder="textRequest"
       v-model="textValue"
     />
-    <button @click.prevent="submitted">submit</button>
+    <button type="submit">submit</button>
   </form>
 </template>
 
