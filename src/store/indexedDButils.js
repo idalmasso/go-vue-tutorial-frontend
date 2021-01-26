@@ -11,7 +11,6 @@ export default {
       let request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
       request.onerror = e => {
-        console.log("Error opening db", e);
         reject("Error");
       };
 
@@ -21,7 +20,7 @@ export default {
       };
 
       request.onupgradeneeded = e => {
-        console.log("onupgradeneeded");
+        console.log("onupgradeneeded called");
         let db = e.target.result;
         let objectStore = db.createObjectStore("userAuth", {
           autoIncrement: true,
@@ -83,7 +82,6 @@ export default {
         let cursor = e.target.result;
 
         if (!cursor) return;
-        console.log(cursor.value);
         user = cursor.value;
       };
     });

@@ -1,5 +1,6 @@
 import jwt_decode from "jwt-decode";
 import dbUtils from "../indexedDButils.js";
+import router from "../../router/index.js";
 export default {
   namespaced: true,
   state: {
@@ -46,6 +47,7 @@ export default {
     async logout(context) {
       dbUtils.removeUser({ username: context.getters.currentUser.username });
       context.commit("LOGOUT");
+      router.push({ name: "Login" });
     },
     async signup(context, { username, password }) {
       return fetch("http://localhost:3000/api/auth/create-user", {
@@ -72,7 +74,6 @@ export default {
     },
     async loadUser(context) {
       dbUtils.getUser().then(user => {
-        console.log(user);
         if (user && user != {}) context.commit("LOGIN", user);
       });
     }

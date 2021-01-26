@@ -40,9 +40,7 @@ export default {
       logout: "auth/logout"
     }),
     logoutButtonClicked() {
-      this.logout().then(() => {
-        this.$router.push({ name: "Login" });
-      });
+      this.logout();
     }
   },
   computed: {

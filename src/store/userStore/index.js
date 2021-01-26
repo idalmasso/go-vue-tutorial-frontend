@@ -22,7 +22,12 @@ export default {
         }
       })
         .then(response => {
-          if (!response.ok) throw new Error("Cannot get user");
+          if (!response.ok) {
+            if (response.status == 401) {
+              context.dispatch("auth/logout", {}, { root: true });
+            }
+            throw new Error("Cannot get user");
+          }
           return response.json();
         })
         .then(data => {
