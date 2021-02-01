@@ -39,70 +39,85 @@ export default {
   },
   actions: {
     async addPost(context, post) {
-      fetch("http://localhost:3000/api/posts", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: context.rootGetters["auth/getTokenHeader"]
-        },
-        body: JSON.stringify(post)
-      })
-        .then(response => {
-          if (!response.ok) {
-            throw Error(response.body);
-          }
-          return response.json();
-        })
-        .then(data => {
-          context.commit("ADD_POST", data);
-        })
-        .catch(error => {
-          console.log(error);
+      context
+        .dispatch("auth/updateAuthorizationIfNeeded", {}, { root: true })
+        .then(() => {
+          fetch("http://localhost:3000/api/posts", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: context.rootGetters["auth/getTokenHeader"]
+            },
+            body: JSON.stringify(post)
+          })
+            .then(response => {
+              if (!response.ok) {
+                throw Error(response.body);
+              }
+              return response.json();
+            })
+            .then(data => {
+              context.commit("ADD_POST", data);
+            })
+            .catch(error => {
+              console.log(error);
+            });
         });
     },
     async deletePost(context, { post }) {
-      fetch(process.env.VUE_APP_SERVER_ADDRESS + "/api/posts/" + post.id, {
-        method: "DELETE",
-        headers: {
-          Authorization: context.rootGetters["auth/getTokenHeader"]
-        }
-      })
-        .then(response => {
-          if (response.ok) {
-            context.commit("DELETE_POST", post.id);
-            return;
-          }
-          throw Error(response);
-        })
-        .catch(error => {
-          console.log(error);
+      context
+        .dispatch("auth/updateAuthorizationIfNeeded", {}, { root: true })
+        .then(() => {
+          fetch(process.env.VUE_APP_SERVER_ADDRESS + "/api/posts/" + post.id, {
+            method: "DELETE",
+            headers: {
+              Authorization: context.rootGetters["auth/getTokenHeader"]
+            }
+          })
+            .then(response => {
+              if (response.ok) {
+                context.commit("DELETE_POST", post.id);
+                return;
+              }
+              throw Error(response);
+            })
+            .catch(error => {
+              console.log(error);
+            });
         });
     },
     async addComment(context, { postId, comment }) {
-      fetch(
-        process.env.VUE_APP_SERVER_ADDRESS +
-          "/api/posts/" +
-          postId +
-          "/comments",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: context.rootGetters["auth/getTokenHeader"]
-          },
-          body: JSON.stringify(comment)
-        }
-      )
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else throw Error(response.body);
-        })
-        .then(data => {
-          context.commit("SET_POST_COMMENTS", { postId: postId, post: data });
-        })
-        .catch(error => {
-          console.log(error);
+      context
+        .dispatch("auth/updateAuthorizationIfNeeded", {}, { root: true })
+        .then(() => {
+          fetch(
+            process.env.VUE_APP_SERVER_ADDRESS +
+              "/api/posts/" +
+              postId +
+              "/comments",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: context.rootGetters["auth/getTokenHeader"]
+              },
+              body: JSON.stringify(comment)
+            }
+          )
+            .then(response => {
+              if (response.ok) {
+                return response.json();
+              } else throw Error(response.body);
+            })
+            .then(data => {
+              context.commit("SET_POST_COMMENTS", {
+                postId: postId,
+                post: data
+              });
+            })
+            .catch(error => {
+              console.log(error);
+            });
         });
     },
     async getAllPosts(context) {

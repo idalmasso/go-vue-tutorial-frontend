@@ -98,6 +98,41 @@ export default {
       dbUtils.getUser().then(user => {
         if (user && user != {}) context.commit("LOGIN", user);
       });
+    },
+    async updateAuthorizationIfNeeded(context) {
+      var exp = 0;
+      if (context.getters.getTokenAuthorization !== "") {
+        var data = jwt_decode(context.getters.getTokenAuthorization);
+        //data.exp expiration in seconds. Date.now is in milliseconds... So just *1000
+        exp = data.exp * 1000;
+      }
+      if (context.getters.getTokenAuthorization === "" || Date.now() > exp) {
+        return fetch(process.env.VUE_APP_SERVER_ADDRESS + "/api/auth/token", {
+          headers: {
+            Authorization: "Bearer " + context.getters.getTokenAuthentication
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error("Cannot get token!");
+            }
+            return response.json();
+          })
+          .then(data => {
+            context.commit("SET_AUTHORIZATION", data.authorization_token);
+          })
+          .catch(error => {
+            dbUtils.removeUser({
+              username: context.getters.currentUser.username
+            });
+            context.commit("LOGOUT");
+            throw error;
+          });
+      } else {
+        return new Promise(success => {
+          success([]);
+        });
+      }
     }
   },
   getters: {
@@ -108,8 +143,14 @@ export default {
       if (!state.user) return false;
       return state.user.loggedIn;
     },
+    getTokenAuthorization(state) {
+      return state.user.authorizationToken;
+    },
     getTokenHeader(state) {
       return "Bearer " + state.user.authorizationToken;
+    },
+    getTokenAuthentication(state) {
+      return state.user.authenticationToken;
     }
   }
 };

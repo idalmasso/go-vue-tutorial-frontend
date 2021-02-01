@@ -42,32 +42,39 @@ export default {
         });
     },
     async updateDescription(context, { username, description }) {
-      return fetch(
-        process.env.VUE_APP_SERVER_ADDRESS + "/api/users/" + username,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: context.rootGetters["auth/getTokenHeader"],
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ username: username, description: description })
-        }
-      )
-        .then(response => {
-          if (!response.ok) {
-            if (response.status == 401) {
-              context.dispatch("auth/logout", {}, { root: true });
+      context
+        .dispatch("auth/updateAuthorizationIfNeeded", {}, { root: true })
+        .then(() => {
+          return fetch(
+            process.env.VUE_APP_SERVER_ADDRESS + "/api/users/" + username,
+            {
+              method: "PATCH",
+              headers: {
+                Authorization: context.rootGetters["auth/getTokenHeader"],
+                "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                username: username,
+                description: description
+              })
             }
-            throw new Error("Cannot update");
-          }
-          return response.json();
-        })
-        .then(data => {
-          context.commit("ADD_USER", data);
-        })
-        .catch(error => {
-          console.log(error);
-          throw error;
+          )
+            .then(response => {
+              if (!response.ok) {
+                if (response.status == 401) {
+                  context.dispatch("auth/logout", {}, { root: true });
+                }
+                throw new Error("Cannot update");
+              }
+              return response.json();
+            })
+            .then(data => {
+              context.commit("ADD_USER", data);
+            })
+            .catch(error => {
+              console.log(error);
+              throw error;
+            });
         });
     }
   },
