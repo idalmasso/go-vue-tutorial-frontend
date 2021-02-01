@@ -7,19 +7,24 @@ export default {
     user: {
       username: "",
       loggedIn: false,
-      token: ""
+      authenticationToken: "",
+      authorizationToken: ""
     }
   },
   mutations: {
     LOGIN(state, { username, token }) {
       state.user.loggedIn = true;
       state.user.username = username;
-      state.user.token = token;
+      state.user.authenticationToken = token;
     },
     LOGOUT(state) {
       state.user.loggedIn = false;
       state.user.username = "";
-      state.user.token = "";
+      state.user.authenticationToken = "";
+      state.user.authorizationToken = "";
+    },
+    SET_AUTHORIZATION(state, token) {
+      state.user.authorizationToken = token;
     }
   },
   actions: {
@@ -35,8 +40,15 @@ export default {
           return response.json();
         })
         .then(data => {
-          dbUtils.addUser({ username: username, token: data.token });
-          context.commit("LOGIN", { username: username, token: data.token });
+          dbUtils.addUser({
+            username: username,
+            token: data.authentication_token
+          });
+          context.commit("LOGIN", {
+            username: username,
+            token: data.authentication_token
+          });
+          context.commit("SET_AUTHORIZATION", data.authorization_token);
         })
         .catch(error => {
           dbUtils.removeUser({ username: username });
@@ -64,8 +76,15 @@ export default {
           return response.json();
         })
         .then(data => {
-          dbUtils.addUser({ username: username, token: data.token });
-          context.commit("LOGIN", { username: username, token: data.token });
+          dbUtils.addUser({
+            username: username,
+            token: data.authentication_token
+          });
+          context.commit("LOGIN", {
+            username: username,
+            token: data.authentication_token
+          });
+          context.commit("SET_AUTHORIZATION", data.authorization_token);
         })
         .catch(error => {
           dbUtils.removeUser({
@@ -90,7 +109,7 @@ export default {
       return state.user.loggedIn;
     },
     getTokenHeader(state) {
-      return "Bearer " + state.user.token;
+      return "Bearer " + state.user.authorizationToken;
     }
   }
 };
