@@ -51,15 +51,30 @@ export default {
           context.commit("SET_AUTHORIZATION", data.authorization_token);
         })
         .catch(error => {
-          dbUtils.removeUser({ username: username });
-          context.commit("LOGOUT");
+          context.dispatch("logout");
           throw error;
         });
     },
     async logout(context) {
-      dbUtils.removeUser({ username: context.getters.currentUser.username });
-      context.commit("LOGOUT");
-      router.push({ name: "Login" });
+      return dbUtils
+        .removeUser({
+          username: context.getters.currentUser.username
+        })
+        .then(() => {
+          return fetch(
+            process.env.VUE_APP_SERVER_ADDRESS + "/api/auth/logout",
+            {
+              method: "POST",
+              headers: {
+                Authorization:
+                  "Bearer " + context.getters.getTokenAuthentication
+              }
+            }
+          ).then(() => {
+            context.commit("LOGOUT");
+            router.push({ name: "Login" });
+          });
+        });
     },
     async signup(context, { username, password }) {
       return fetch(
@@ -87,10 +102,7 @@ export default {
           context.commit("SET_AUTHORIZATION", data.authorization_token);
         })
         .catch(error => {
-          dbUtils.removeUser({
-            username: context.getters.currentUser.username
-          });
-          context.commit("LOGOUT");
+          context.dispatch("logout");
           throw error;
         });
     },
@@ -122,10 +134,7 @@ export default {
             context.commit("SET_AUTHORIZATION", data.authorization_token);
           })
           .catch(error => {
-            dbUtils.removeUser({
-              username: context.getters.currentUser.username
-            });
-            context.commit("LOGOUT");
+            context.dispatch("logout");
             throw error;
           });
       } else {
